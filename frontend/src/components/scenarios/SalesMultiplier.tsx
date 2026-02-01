@@ -8,8 +8,8 @@ interface SalesMultiplierProps {
 
 export const SalesMultiplier = ({value,onChange}: SalesMultiplierProps) => {
     const getColor = (val: number) => {
-        if(val<1) 'text-red-500';
-        if(val<1.5) 'text-yelow-500';
+        if(val<1) return 'text-red-500';
+        if(val<1.5) return 'text-yelow-500';
         return 'text-green-500';
     }
 

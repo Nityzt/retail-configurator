@@ -5,7 +5,7 @@ function App() {
 
   return (
     <div className="App">
-      
+      {/*application components go here */}
     </div>
   );
 }
