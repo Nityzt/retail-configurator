@@ -1,27 +1,17 @@
 export interface Scenario {
-    _id? : string;
-    name : string;
-    dateRange : {
-        start : Date;
-        end : Date;
+    _id?: string;
+    name: string;
+    salesMultiplier: number;
+    productCategories: string[];
+    regions: string[];
+    customerSegments: string[];
+    dateRange: {
+      start: string;
+      end: string;
     };
-    productCategories : string[];
-    salesMultiplier : number;
-    regions : string[];
-    customerSegments : string[];
-    createdAt? : Date;
-    updatedAt? : Date;
-}
+    createdAt?: string;
+    updatedAt?: string;
+  }
+  
 
-export interface ScenarioFormData {
-    name : string;
-    dateRange : {
-        start : string;
-        end : string;
-    };
-
-    productCategories : string[];
-    salesMultiplier : number;
-    regions : string[];
-    customerSegments : string[];
-}
+  export type ScenarioFormData = Omit<Scenario, '_id' | 'createdAt' | 'updatedAt'>;

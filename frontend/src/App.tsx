@@ -1,12 +1,16 @@
-import { useLenis } from "./hooks/useLenis";
+// frontend/src/App.tsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ScenarioList } from './pages/ScenarioList';
+import { ScenarioBuilder } from './pages/ScenarioBuilder';
 
 function App() {
-  useLenis();
-
   return (
-    <div className="App">
-      {/*application components go here */}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<ScenarioList />} />
+        <Route path="/new" element={<ScenarioBuilder />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
