@@ -9,8 +9,8 @@ def create_app():
 
     # MongoDB configuration
     mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    app.config = MongoClient(mongo_uri)
-    app.config['DB'] = app.config['MONGO_CLIENT']['retail_configurator']
+    client = MongoClient(mongo_uri)
+    app.db = client['retail_configurator_db']
 
     # register routes
     from app.routes import api
