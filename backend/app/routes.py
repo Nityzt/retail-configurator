@@ -120,3 +120,29 @@ def delete_scenario(id):
     except Exception as e:
         print(f"Error in delete_scenario: {e}")
         return jsonify({'error': str(e)}), 500
+    
+# backend/app/routes.py - Add preview endpoint
+@api.route('/scenarios/<id>/preview', methods=['GET'])
+def generate_preview(id):
+    """Generate mock preview data for scenario"""
+    try:
+        db = current_app.db
+        scenario = db.scenarios.find_one({'_id': ObjectId(id)})
+        
+        if not scenario:
+            return jsonify({'error': 'Scenario not found'}), 404
+        
+        # Generate mock data based on scenario config
+        mock_data = {
+            'salesData': [
+                {'date': '2024-01-01', 'sales': 1000 * scenario['salesMultiplier']},
+                {'date': '2024-01-02', 'sales': 1200 * scenario['salesMultiplier']},
+                # ... more data points
+            ],
+            'topProducts': scenario['productCategories'][:5],
+            'regionBreakdown': {region: 100 for region in scenario['regions']},
+        }
+        
+        return jsonify(mock_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
