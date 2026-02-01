@@ -1,8 +1,8 @@
 import {motion} from 'framer-motion';
 import { Calendar, TrendingUp, MapPin } from 'lucide-react';
 import {Card} from '@/components/ui/card';
-import {Scenario} from '@/types/scenario';
-import { ScenarioFormData } from '../../types/scenario';
+import type {Scenario} from '@/types/scenario';
+import type { ScenarioFormData } from '../../types/scenario';
 
 interface ScenarioCardProps {
     scenario: Scenario;

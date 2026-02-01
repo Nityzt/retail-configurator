@@ -1,6 +1,7 @@
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import { scenarioSchema, ScenarioFormData } from "@/lib/validation";
+import { scenarioSchema } from "@/lib/validation";
+import type { ScenarioFormData } from "@/lib/validation";
 
 export const ScenarioBuilder = () => {
     const form = useForm<ScenarioFormData>({
