@@ -1,5 +1,16 @@
 import { useScenarios } from '@/hooks/useScenarios';
 import { Link } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const ScenarioCardSkeleton = () => (
+  <div className="bg-white p-6 rounded-lg shadow border-l-4 border-[#f97316] space-y-3">
+    <Skeleton className="h-6 w-3/4" />
+    <Skeleton className="h-4 w-1/2" />
+    <Skeleton className="h-4 w-2/3" />
+    <Skeleton className="h-4 w-1/3" />
+    <Skeleton className="h-3 w-24 mt-4" />
+  </div>
+);
 
 export const ScenarioList = () => {
   const { scenarios, loading, error, deleteScenario } = useScenarios();
@@ -15,14 +26,6 @@ export const ScenarioList = () => {
       }
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading scenarios...</div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -54,7 +57,13 @@ export const ScenarioList = () => {
       <div className="container mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Your Scenarios</h2>
         
-        {scenarios.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ScenarioCardSkeleton key={i} />
+            ))}
+          </div>
+        ) :scenarios.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow">
             <p className="text-gray-500 mb-4">No scenarios yet</p>
             <Link to="/new" className="text-[#f97316] hover:underline">
