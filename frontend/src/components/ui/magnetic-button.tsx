@@ -1,5 +1,6 @@
-import { useRef, useState, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import type { ReactNode } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -17,37 +18,44 @@ export default function MagneticButton({
   disabled = false
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const springX = useSpring(x, { stiffness: 300, damping: 20, mass: 0.5 });
+  const springY = useSpring(y, { stiffness: 300, damping: 20, mass: 0.5 });
 
   const handleMouse = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) return;
+    if (disabled || !ref.current) return;
 
     const { clientX, clientY } = e;
-    const { height, width, left, top } = ref.current!.getBoundingClientRect();
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX, y: middleY });
+    
+    x.set(middleX * 0.5);
+    y.set(middleY * 0.8);
   };
 
   const reset = () => {
-    setPosition({ x: 0, y: 0 });
+    x.set(0);
+    y.set(0);
   };
-
-  const { x, y } = position;
 
   return (
     <motion.button
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      animate={{ x, y }}
-      transition={{ type: 'spring', stiffness: 120, damping: 12, mass: 0.3 }}
+      style={{ x: springX, y: springY }}
       className={className}
       onClick={onClick}
       type={type}
       disabled={disabled}
     >
-      {children}
+      <span className='pointer-events-none block'>
+        {children}
+      </span>
     </motion.button>
   );
 }

@@ -34,7 +34,21 @@ export const useScenarios = () => {
       throw new Error("Failed to create scenario");
     }
   };
-  
+
+  const updateScenario = async (id: string, payload: ScenarioFormData): Promise<Scenario> => {
+    const prevScenarios = [...scenarios];
+    const tempUpdated = { ...payload, _id: id };
+    setScenarios(prev => prev.map(s => s._id === id ? tempUpdated : s));
+    try {
+      const updated = await scenarioApi.update(id, payload);
+      setScenarios(prev => prev.map(s => s._id === id ? updated : s));
+      return updated;
+    } catch (err) {
+      setScenarios(prevScenarios); // revert
+      console.error("Failed to update scenario:", err);
+      throw new Error("Failed to update scenario");
+    }
+  };
 
   const deleteScenario = async (id: string): Promise<void> => {
     const prevScenarios = [...scenarios];
@@ -58,6 +72,7 @@ export const useScenarios = () => {
     loading,
     error,
     createScenario,
+    updateScenario,
     deleteScenario,
     refetch: fetchScenarios,
   };
