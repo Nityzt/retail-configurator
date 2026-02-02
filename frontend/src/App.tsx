@@ -17,6 +17,10 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleViewScenarios = () => {
+    scenariosRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleCreateClick = () => {
     createSectionRef.current?.resetForm();
     createFormRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -83,7 +87,10 @@ function App() {
       {/* Main content */}
       <main className="h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
         <section className="h-screen snap-start snap-always">
-          <HeroSection />
+          <HeroSection 
+            onViewScenarios={handleViewScenarios}
+            onCreateScenario={handleCreateClick}
+          />
         </section>
         
         <section ref={scenariosRef} className="h-screen snap-start snap-always overflow-hidden">
