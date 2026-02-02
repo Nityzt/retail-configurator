@@ -13,7 +13,7 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowWelcome(false), 1800);
+    const timer = setTimeout(() => setShowWelcome(false), 600);
     return () => clearTimeout(timer);
   }, []);
 

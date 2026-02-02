@@ -28,9 +28,22 @@ export const ScenarioBuilder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState<any>(null);
+
+  type PreviewData = {
+    salesData: {
+      date: string;
+      sales: number;
+    }[];
+  };
+  
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
+  
 
   const isEditMode = Boolean(id);
+
+  useEffect(()=>{
+    localStorage.setItem('scenario-draft', JSON.stringify(formData));
+  }, [formData])
 
   // Load scenario data if editing
   useEffect(() => {
@@ -97,7 +110,9 @@ export const ScenarioBuilder = () => {
     if (formData.productCategories.length === 0) newErrors.productCategories = 'Select at least one category';
     if (formData.regions.length === 0) newErrors.regions = 'Select at least one region';
     if (formData.customerSegments.length === 0) newErrors.customerSegments = 'Select at least one segment';
-
+    if (new Date(formData.dateRange.end)< new Date(formData.dateRange.start)){
+      newErrors.dateRange = 'End date must be after start date';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -392,11 +407,13 @@ export const ScenarioBuilder = () => {
         </motion.form>
       </div>
 
-      <PreviewPanel 
-        isOpen={previewOpen} 
-        onClose={() => setPreviewOpen(false)} 
-        data={previewData}
-      />
+      {previewData && (
+  <PreviewPanel
+    isOpen={previewOpen}
+    onClose={() => setPreviewOpen(false)}
+    data={previewData}
+  />
+)}
     </div>
   );
 };
