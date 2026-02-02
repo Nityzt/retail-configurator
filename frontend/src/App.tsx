@@ -13,7 +13,7 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowWelcome(false), 600);
+    const timer = setTimeout(() => setShowWelcome(false), 750);
     return () => clearTimeout(timer);
   }, []);
 
@@ -51,16 +51,15 @@ function App() {
       
       <Toaster position="top-right" richColors theme="dark" />
       
-      {/* Welcome screen - WHITE bg, slides up with curve to reveal black hero */}
+      {/* Welcome screen */}
       <AnimatePresence>
         {showWelcome && (
           <motion.div 
-            className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+            className="fixed inset-0 z-100 flex items-center justify-center overflow-hidden px-4"
             initial={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
           >
-            {/* White background with curved bottom */}
             <motion.div 
               className="absolute inset-0 bg-white"
               initial={{ borderRadius: '0' }}
@@ -68,15 +67,14 @@ function App() {
               transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
             />
             
-            {/* Welcome text */}
             <motion.h1 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ scale:1,opacity: 0, y:30 }} 
+              animate={{ scale:1,opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.5 }}
-              className="relative z-10 text-4xl md:text-6xl font-semibold text-black tracking-tight"
+              className="relative z-10 text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-black tracking-tight"
             >
-              Welcome back
+              Welcome
             </motion.h1>
           </motion.div>
         )}
