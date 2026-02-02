@@ -112,7 +112,7 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
           ease: [0.76, 0, 0.24, 1]
         } : {
           duration: 0.75,
-          delay: 0.35,
+          // delay: 0.35,
           ease: [0.76, 0, 0.24, 1]
         }}
       >
@@ -136,7 +136,7 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
       
       <button
         onClick={handleToggle}
-        className="perspective-btn absolute top-0 right-0 w-[120px] h-[40px] bg-white/10 hover:bg-white/20 rounded-full overflow-hidden cursor-pointer transition-colors border border-white/20 flex items-center justify-center"
+        className="perspective-btn absolute top-0 right-0 w-30 h-10 bg-white/10 hover:bg-white/20 rounded-full overflow-hidden cursor-pointer transition-colors border border-white/20 flex items-center justify-center"
       >
         <span className="text-white text-xs font-medium">
           <PerspectiveText>{isActive ? "Close" : "Preview"}</PerspectiveText>
@@ -151,7 +151,7 @@ const PreviewContent = ({ data }: { data?: PreviewData }) => (
   <div className="flex-1 min-h-0">
     <h3 className="text-sm sm:text-base font-medium text-gray-400 mb-3 sm:mb-4">Sales Trend</h3>
     {(!data || data.salesData.length === 0) ? (
-      <div className="flex items-center justify-center h-[200px] sm:h-[300px]">
+      <div className="flex items-center justify-center h-50 sm:h-75">
         <p className="text-xs sm:text-sm text-gray-500">
           No data available for this scenario.
         </p>

@@ -14,7 +14,7 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
         <motion.h1 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.95 }}
           className="text-[7vw] sm:text-[5vw] md:text-[4.5vw] lg:text-[4vw] xl:text-[3.5vw] font-semibold text-white tracking-tight mb-1 sm:mb-2 leading-tight"
         >
           Retail Scenario
@@ -22,7 +22,7 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
         <motion.h1 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 1 }}
           className="text-[7vw] sm:text-[5vw] md:text-[4.5vw] lg:text-[4vw] xl:text-[3.5vw] font-semibold text-white tracking-tight mb-4 sm:mb-6 leading-tight"
         >
           Configurator
@@ -32,7 +32,7 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="inline-block px-[2vw] sm:px-4 py-[0.5vw] sm:py-1.5 bg-[#f97316] text-white text-[2.5vw] sm:text-sm font-medium rounded-full"
+          className="inline-block px-[2vw] sm:px-4 py-[0.5vw] sm:py-1.5 bg-white/10 text-white/50 text-[2.5vw] sm:text-sm font-medium rounded-full"
         >
           demo
         </motion.span>
@@ -55,7 +55,7 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
         >
           <MagneticButton 
             onClick={onViewScenarios}
-            className="perspective-btn w-[40vw] sm:w-auto h-[10vw] sm:h-12 px-[4vw] sm:px-6 bg-white/10 hover:bg-white/20 rounded-full overflow-hidden cursor-pointer transition-colors"
+            className="perspective-btn w-[40vw] sm:w-auto h-10vw sm:h-12 px-[4vw] sm:px-6 bg-[#f97316] hover:bg-[#ea580c] rounded-full overflow-hidden cursor-pointer transition-colors"
           >
             <span className="text-white text-[2.5vw] sm:text-sm font-medium">
               <PerspectiveText>View Scenarios</PerspectiveText>
