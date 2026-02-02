@@ -6,6 +6,7 @@ import type { ScenarioFormData } from '@/types/scenario';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import MagneticButton from '@/components/ui/magnetic-button';
+import { PreviewPanel } from '@/components/scenarios/PreviewPanel';
 import { staggerContainer, formFieldReveal } from '@/lib/animations';
 
 const initialFormData: ScenarioFormData = {
@@ -26,6 +27,8 @@ export const ScenarioBuilder = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof ScenarioFormData | 'dateRange', string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
 
   const isEditMode = Boolean(id);
 
@@ -62,6 +65,27 @@ export const ScenarioBuilder = () => {
         ? prev[field].filter(v => v !== value)
         : [...prev[field], value],
     }));
+  };
+
+  // Generate preview data
+  const generatePreview = () => {
+    const startDate = new Date(formData.dateRange.start || new Date());
+    const endDate = new Date(formData.dateRange.end || new Date());
+    const days = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    const salesData = Array.from({ length: Math.min(days, 30) }, (_, i) => {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      const baseValue = 1000 + Math.random() * 500;
+      const seasonality = Math.sin(i / 7) * 200;
+      return {
+        date: date.toISOString().split('T')[0],
+        sales: Math.round((baseValue + seasonality) * formData.salesMultiplier),
+      };
+    });
+
+    setPreviewData({ salesData });
+    setPreviewOpen(true);
   };
 
   // Validate form
@@ -133,9 +157,19 @@ export const ScenarioBuilder = () => {
           >
             ← Back to Scenarios
           </motion.button>
-          <h1 className="text-3xl font-bold">
-            {isEditMode ? 'Edit Demo Scenario' : 'Create Demo Scenario'}
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold">
+              {isEditMode ? 'Edit Demo Scenario' : 'Create Demo Scenario'}
+            </h1>
+            <motion.button
+              onClick={generatePreview}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Preview Data
+            </motion.button>
+          </div>
         </motion.div>
 
         <motion.form
@@ -357,6 +391,12 @@ export const ScenarioBuilder = () => {
           </motion.div>
         </motion.form>
       </div>
+
+      <PreviewPanel 
+        isOpen={previewOpen} 
+        onClose={() => setPreviewOpen(false)} 
+        data={previewData}
+      />
     </div>
   );
 };
