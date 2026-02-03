@@ -5,14 +5,25 @@ import os
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
 
-    # MongoDB configuration
-    mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    client = MongoClient(mongo_uri)
-    app.db = client['retail_configurator_db']
+    # CORS: allow your frontend dev server during development
+    CORS(app, origins=["http://localhost:5173", ""])
 
-    # register routes
+    # MongoDB Atlas configuration
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise ValueError("MONGO_URI environment variable not set!")
+
+    # Connect to Atlas with TLS
+    client = MongoClient(
+        mongo_uri,
+        tls=True,  # enforce TLS
+        tlsAllowInvalidCertificates=False,  # set True only for testing
+        serverSelectionTimeoutMS=10000  # fail fast if connection fails
+    )
+    app.db = client.get_database()  # uses DB from URI
+
+    # Register routes
     from app.routes import api
     app.register_blueprint(api, url_prefix='/api')
 

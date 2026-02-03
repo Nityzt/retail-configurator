@@ -1,14 +1,14 @@
 import axios from 'axios';
 import type { Scenario } from '@/types/scenario';
 
-const API_BASE_URL = 'https://retail-configurator-backend.onrender.com || http://localhost:5001/api';
-
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+export default api;
 
 export const scenarioApi = {
   getAll: async (): Promise<Scenario[]> => {
