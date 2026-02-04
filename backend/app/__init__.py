@@ -9,11 +9,15 @@ def create_app():
     # CORS: allow your frontend dev server during development
     CORS(
     app,
-    resources={r"/*": {"origins": [
-        "https://retail-config.vercel.app",
-        "http://localhost:5173"
-    ]}}
+    resources={r"/api/*": {
+        "origins": [
+            "http://localhost:5173",
+            "https://retail-config.vercel.app"
+        ],
+        "supports_credentials": False
+    }}
 )
+
 
 
     # MongoDB Atlas configuration
