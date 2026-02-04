@@ -2,6 +2,25 @@ from flask import Blueprint, request, jsonify, current_app
 from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from app.models import ScenarioSchema
+from dateutil import parser
+
+def normalize_dates(data: dict):
+    """Ensure date fields are proper datetime objects"""
+
+    for key in ['createdAt', 'updatedAt']:
+        try: 
+            data[key] = parser.isoparse(data[key])
+        except Exception:
+            data[key] = datetime.now(timezone.utc)
+
+    if 'dateRange' in data:
+        for subkey in ['start', 'end']:
+            if data['dataRange'].get(subkey) and isinstance(data['dataRange'][subkey], str):
+                try:
+                    data['dataRange'][subkey] = parser.isoparse(data['dataRange'][subkey])
+                except Exception:
+                    data['dataRange'][subkey] = None
+    return data
 
 api = Blueprint('api', __name__)
 scenario_schema = ScenarioSchema()
@@ -31,6 +50,9 @@ def create_scenario():
         
 
         data = request.get_json()
+
+        data = normalize_dates(data)
+
         print("=" * 50)
         print("Received data:")
         print(data)
@@ -45,8 +67,10 @@ def create_scenario():
         print("Validation passed")
 
         # Add timestamps
-        data['createdAt'] = datetime.now(timezone.utc)
         data['updatedAt'] = datetime.now(timezone.utc)
+        if request.method == 'POST':
+            data['createdAt'] = datetime.now(timezone.utc)
+        
 
         # Insert into MongoDB
         result = db.scenarios.insert_one(data)
@@ -88,7 +112,11 @@ def update_scenario(id):
     try:
         db = current_app.db  # FIXED: Use current_app.db
         data = request.get_json()
+        data = normalize_dates(data)
+
         data['updatedAt'] = datetime.now(timezone.utc)
+        if request.method == 'POST':
+            data['createdAt'] = datetime.now(timezone.utc)
         
         result = db.scenarios.update_one(
             {'_id': ObjectId(id)},
