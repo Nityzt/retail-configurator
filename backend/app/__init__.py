@@ -7,7 +7,14 @@ def create_app():
     app = Flask(__name__)
 
     # CORS: allow your frontend dev server during development
-    CORS(app, origins=["https://retail-config.vercel.app"])
+    CORS(
+    app,
+    resources={r"/*": {"origins": [
+        "https://retail-config.vercel.app",
+        "http://localhost:5173"
+    ]}}
+)
+
 
     # MongoDB Atlas configuration
     mongo_uri = os.getenv("MONGO_URI")
@@ -23,7 +30,7 @@ def create_app():
     )
 
     client.admin.command("ping")  # <-- fail immediately if broken
-    
+
     app.db = client.get_database()  # uses DB from URI
 
     # Register routes
