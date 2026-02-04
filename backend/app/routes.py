@@ -86,35 +86,24 @@ def get_scenario(id):
 def update_scenario(id):
     """Update scenario"""
     try:
-        db = current_app.db
+        db = current_app.db  # FIXED: Use current_app.db
         data = request.get_json()
         data['updatedAt'] = datetime.now(timezone.utc)
-
-        # Convert dateRange strings to date objects if present
-        if 'dateRange' in data:
-            start = data['dateRange'].get('start')
-            end = data['dateRange'].get('end')
-            if isinstance(start, str) and start:
-                data['dateRange']['start'] = datetime.fromisoformat(start).date()
-            if isinstance(end, str) and end:
-                data['dateRange']['end'] = datetime.fromisoformat(end).date()
-
+        
         result = db.scenarios.update_one(
             {'_id': ObjectId(id)},
             {'$set': data}
         )
-
+        
         if result.matched_count == 0:
             return jsonify({'error': 'Scenario not found'}), 404
-
+        
         updated = db.scenarios.find_one({'_id': ObjectId(id)})
         updated['_id'] = str(updated['_id'])
-
+        
         return jsonify(scenario_schema.dump(updated)), 200
     except Exception as e:
         print(f"Error in update_scenario: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @api.route('/scenarios/<id>', methods=['DELETE'])
