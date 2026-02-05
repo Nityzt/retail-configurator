@@ -120,8 +120,8 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
         const payload = {
           ...formData,
           dateRange: {
-            start: formData.dateRange.start || null,
-            end: formData.dateRange.end || null,
+            start: formData.dateRange.start,
+            end: formData.dateRange.end ,
           },
         };
     

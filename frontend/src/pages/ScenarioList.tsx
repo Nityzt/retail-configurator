@@ -1,7 +1,6 @@
 import { useScenarioContext } from '@/contexts/ScenarioContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import MagneticButton from '@/components/ui/magnetic-button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const ScenarioList = () => {
