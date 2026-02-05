@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { HeroSection } from './components/sections/HeroSection';
 import { ScenariosSection } from './components/sections/ScenariosSection';
 import { CreateSection, type CreateSectionRef } from './components/sections/CreateSection';
+import { ScenarioProvider } from './contexts/ScenarioContext';
 
 function App() {
   const createSectionRef = useRef<CreateSectionRef>(null);
@@ -36,6 +37,7 @@ function App() {
   };
 
   return (
+    <ScenarioProvider>
     <div className="bg-black font-sans">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -102,6 +104,7 @@ function App() {
         </section>
       </main>
     </div>
+    </ScenarioProvider>
   );
 }
 

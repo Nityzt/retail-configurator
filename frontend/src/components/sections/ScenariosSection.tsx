@@ -1,9 +1,9 @@
-import { useScenarios } from '@/hooks/useScenarios';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import type { Scenario } from '@/types/scenario';
 import MagneticButton from '@/components/ui/magnetic-button';
 import { PerspectiveText } from '@/components/ui/PerspectiveText';
+import { useScenarioContext } from '@/contexts/ScenarioContext';
 
 interface ScenariosSectionProps {
   onCreateClick: () => void;
@@ -11,7 +11,7 @@ interface ScenariosSectionProps {
 }
 
 const ScenarioCard = ({ scenario, onEdit, onDelete }: { scenario: Scenario; onEdit: () => void; onDelete: () => void }) => (
-  <div className="bg-white/5 border border-white/10 p-[3vw] sm:p-4 rounded-[2vw] sm:rounded-xl hover:bg-white/[0.08] transition-colors">
+  <div className="bg-white/5 border border-white/10 p-[3vw] sm:p-4 rounded-[2vw] sm:rounded-xl hover:bg-white/8 transition-colors">
     <div className="flex justify-between items-start mb-[1.5vw] sm:mb-2">
       <h3 className="text-[3vw] sm:text-sm font-medium text-white truncate flex-1 mr-2">{scenario.name}</h3>
       <span className="px-[1.5vw] sm:px-2 py-[0.5vw] sm:py-0.5 bg-[#f97316]/20 text-[#f97316] text-[2.5vw] sm:text-xs rounded-full shrink-0">{scenario.salesMultiplier}x</span>
@@ -35,7 +35,7 @@ const CardSkeleton = () => (
 );
 
 export const ScenariosSection = ({ onCreateClick, onEditClick }: ScenariosSectionProps) => {
-  const { scenarios, loading, deleteScenario } = useScenarios();
+  const { scenarios, loading, deleteScenario } = useScenarioContext();
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Delete this scenario?')) {

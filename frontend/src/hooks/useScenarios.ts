@@ -4,7 +4,7 @@ import type { Scenario, ScenarioFormData } from '@/types/scenario';
 
 export const useScenarios = () => {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchScenarios = useCallback(async () => {
@@ -14,8 +14,8 @@ export const useScenarios = () => {
       const data = await scenarioApi.getAll();
       setScenarios(data);
     } catch (err) {
-      console.error("Failed to fetch scenarios:", err);
-      setError("Failed to load scenarios");
+      console.error('Failed to fetch scenarios', err);
+      setError('Failed to load scenarios');
     } finally {
       setLoading(false);
     }
@@ -30,8 +30,7 @@ export const useScenarios = () => {
       return newScenario;
     } catch (err) {
       setScenarios(prev => prev.filter(s => s._id !== 'temp-id'));
-      console.error("Failed to create scenario:", err);
-      throw new Error("Failed to create scenario");
+      throw err;
     }
   };
 
@@ -44,9 +43,8 @@ export const useScenarios = () => {
       setScenarios(prev => prev.map(s => s._id === id ? updated : s));
       return updated;
     } catch (err) {
-      setScenarios(prevScenarios); // revert
-      console.error("Failed to update scenario:", err);
-      throw new Error("Failed to update scenario");
+      setScenarios(prevScenarios);
+      throw err;
     }
   };
 
@@ -56,12 +54,10 @@ export const useScenarios = () => {
     try {
       await scenarioApi.delete(id);
     } catch (err) {
-      console.error("Failed to delete scenario:", err);
-      setScenarios(prevScenarios); // revert
-      throw new Error("Failed to delete scenario");
+      setScenarios(prevScenarios);
+      throw err;
     }
   };
-  
 
   useEffect(() => {
     fetchScenarios();
