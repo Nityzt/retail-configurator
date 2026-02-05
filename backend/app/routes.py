@@ -70,6 +70,8 @@ def create_scenario():
 
         errors = scenario_schema.validate(data)
         if errors:
+            print("CREATE VALIDATION ERRORS:")
+            print(errors)
             return jsonify({'errors': errors}), 400
 
         result = db.scenarios.insert_one(data)
