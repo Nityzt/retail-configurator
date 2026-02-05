@@ -94,21 +94,36 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
     /** Validate form */
     const validate = (): boolean => {
       const newErrors: Errors = {};
-
-      if (!formData.name.trim()) newErrors.name = 'Required';
+    
+      const name = formData.name.trim();
+    
+      if (!name) {
+        newErrors.name = 'Required';
+      } else if (name.length < 3) {
+        newErrors.name = 'Must be at least 3 characters';
+      }
+    
       if (!formData.dateRange.start || !formData.dateRange.end) {
         newErrors.dateRange = 'Required';
-      } else if (new Date(formData.dateRange.start) > new Date(formData.dateRange.end)) {
+      } else if (
+        new Date(formData.dateRange.start) > new Date(formData.dateRange.end)
+      ) {
         newErrors.dateRange = 'Start date must be before end date';
       }
-      if (formData.productCategories.length === 0) newErrors.productCategories = 'Select at least one';
-      if (formData.regions.length === 0) newErrors.regions = 'Select at least one';
-      if (formData.customerSegments.length === 0) newErrors.customerSegments = 'Select at least one';
-
+    
+      if (formData.productCategories.length === 0)
+        newErrors.productCategories = 'Select at least one';
+    
+      if (formData.regions.length === 0)
+        newErrors.regions = 'Select at least one';
+    
+      if (formData.customerSegments.length === 0)
+        newErrors.customerSegments = 'Select at least one';
+    
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     };
-
+    
     /** Handle form submit */
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async e => {
       e.preventDefault();
