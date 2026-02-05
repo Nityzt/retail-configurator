@@ -56,23 +56,20 @@ def get_scenarios():
 
 @api.route('/scenarios', methods=['POST'])
 def create_scenario():
-    """Create a new scenario"""
     try:
         db = current_app.db
         data = request.get_json() or {}
 
-        data = normalize_dates(data)
-
-        # Set timestamps explicitly
-        now = datetime.now(timezone.utc)
-        data['createdAt'] = now
-        data['updatedAt'] = now
-
+        # Validate RAW payload
         errors = scenario_schema.validate(data)
         if errors:
             print("CREATE VALIDATION ERRORS:")
             print(errors)
             return jsonify({'errors': errors}), 400
+
+        now = datetime.now(timezone.utc)
+        data['createdAt'] = now
+        data['updatedAt'] = now
 
         result = db.scenarios.insert_one(data)
         created = db.scenarios.find_one({'_id': result.inserted_id})
