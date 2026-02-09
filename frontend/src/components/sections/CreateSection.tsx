@@ -1,4 +1,4 @@
-import { useState, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react';
 
 import { scenarioApi } from '@/lib/api';
 import type { ScenarioFormData } from '@/types/scenario';
@@ -24,7 +24,7 @@ export interface CreateSectionRef {
 }
 
 interface CreateSectionProps {
-  onSuccess?: () => void; // parent can refresh list
+  onSuccess?: () => void;
 }
 
 type Errors = Partial<Record<keyof ScenarioFormData | 'dateRange', string>>;
@@ -58,6 +58,7 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
         setFormData(initialFormData);
         setEditingId(null);
         setErrors({});
+        setPreviewData(undefined); // Clear preview on reset
       },
       scrollIntoView: () => {
         sectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -75,12 +76,24 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
       }));
     }, []);
 
-    /** Generate preview data */
+    /** Generate preview data - IMPROVED VERSION */
     const generatePreview = useCallback(() => {
-      const startDate = formData.dateRange.start ? new Date(formData.dateRange.start) : new Date();
-      const endDate = formData.dateRange.end ? new Date(formData.dateRange.end) : new Date();
+      // Default to 30-day period from today if dates not set
+      const today = new Date();
+      const defaultEnd = new Date();
+      defaultEnd.setDate(defaultEnd.getDate() + 30);
+
+      const startDate = formData.dateRange.start 
+        ? new Date(formData.dateRange.start) 
+        : today;
+      const endDate = formData.dateRange.end 
+        ? new Date(formData.dateRange.end) 
+        : defaultEnd;
+
       const days = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
-      const salesData = Array.from({ length: Math.min(days, 30) }, (_, i) => {
+      const dataPoints = Math.min(days, 30); // Limit to 30 points for chart readability
+
+      const salesData = Array.from({ length: dataPoints }, (_, i) => {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
         return {
@@ -90,6 +103,14 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
       });
       setPreviewData({ salesData });
     }, [formData.dateRange, formData.salesMultiplier]);
+
+    /** Auto-generate preview when dates or multiplier change - OPTION 1: AUTO-PREVIEW */
+    useEffect(() => {
+      // Only auto-generate if we have dates OR if editing a scenario
+      if ((formData.dateRange.start && formData.dateRange.end) || editingId) {
+        generatePreview();
+      }
+    }, [formData.dateRange.start, formData.dateRange.end, formData.salesMultiplier, generatePreview, editingId]);
 
     /** Validate form */
     const validate = (): boolean => {
@@ -131,12 +152,11 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
     
       setIsSubmitting(true);
       try {
-        // Send date strings exactly as the backend expects (YYYY-MM-DD)
         const payload = {
           ...formData,
           dateRange: {
             start: formData.dateRange.start,
-            end: formData.dateRange.end ,
+            end: formData.dateRange.end,
           },
         };
     
@@ -151,20 +171,20 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
         setFormData(initialFormData);
         setEditingId(null);
         setErrors({});
-        onSuccess?.(); // refresh parent list
+        setPreviewData(undefined); // Clear preview after submit
+        onSuccess?.();
       } catch {
         toast.error('Failed to submit scenario');
       } finally {
         setIsSubmitting(false);
       }
     };
-    
-    
 
     const handleCancel = () => {
       setFormData(initialFormData);
       setEditingId(null);
       setErrors({});
+      setPreviewData(undefined); // Clear preview on cancel
     };
 
     return (
@@ -192,7 +212,7 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
                 value={formData.name}
                 onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-[2vw] sm:px-3 py-[1.5vw] sm:py-2 bg-white/10 border border-white/20 rounded-[1vw] sm:rounded-lg text-white text-[2.5vw] sm:text-sm placeholder-gray-500 focus:outline-none focus:border-[#f97316]"
-                placeholder="Q4 Holiday Rush"
+                placeholder="Boxing Day Blitz"
               />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
@@ -244,21 +264,21 @@ export const CreateSection = forwardRef<CreateSectionRef, CreateSectionProps>(
               />
             </div>
 
-            {/* Array fields: categories, regions, segments */}
+            {/* Array fields: categories, regions (CANADIAN PROVINCES), segments */}
             {(['productCategories', 'regions', 'customerSegments'] as ArrayField[]).map(field => (
               <div key={field}>
                 <label className="block text-[2.5vw] sm:text-xs font-medium text-gray-400 mb-[1vw] sm:mb-2">
                   {field === 'productCategories'
                     ? 'Categories'
                     : field === 'regions'
-                    ? 'Regions'
+                    ? 'Provinces/Regions'
                     : 'Segments'}
                 </label>
                 <div className="flex flex-wrap gap-[1vw] sm:gap-1.5">
                   {(field === 'productCategories'
                     ? ['Electronics', 'Home', 'Tools', 'Appliances', 'Lighting', 'Paint']
                     : field === 'regions'
-                    ? ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West']
+                    ? ['Ontario', 'Quebec', 'British Columbia', 'Alberta', 'Manitoba']
                     : ['New', 'Returning', 'VIP']
                   ).map(option => (
                     <button
