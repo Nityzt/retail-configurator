@@ -46,27 +46,31 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
           Empowering non-technical teams to create data-driven demos
         </motion.p>
 
-        {/* Navigation Buttons with Magnetic + Perspective animation */}
+        {/* Buttons - always row, symmetric sizing at all breakpoints */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="mt-[5vw] sm:mt-10 flex flex-col sm:flex-row gap-[2vw] sm:gap-4 justify-center items-center"
+          className="mt-[5vw] sm:mt-10 flex flex-row gap-[3vw] sm:gap-4 justify-center items-center"
+          role="navigation"
+          aria-label="Main navigation"
         >
           <MagneticButton 
             onClick={onViewScenarios}
-            className="perspective-btn w-[40vw] sm:w-auto h-10vw sm:h-12 px-[4vw] sm:px-6 bg-[#f97316] hover:bg-[#ea580c] rounded-full overflow-hidden cursor-pointer transition-colors"
+            className="perspective-btn h-[10vw] sm:h-12 px-[5vw] sm:px-6 min-w-[30vw] sm:min-w-0 bg-[#f97316] hover:bg-[#ea580c] rounded-full overflow-hidden cursor-pointer transition-colors flex items-center justify-center"
+            aria-label="View all scenarios"
           >
-            <span className="text-white text-[2.5vw] sm:text-sm font-medium">
+            <span className="text-white text-[2.8vw] sm:text-sm font-medium whitespace-nowrap">
               <PerspectiveText>View Scenarios</PerspectiveText>
             </span>
           </MagneticButton>
           
           <MagneticButton 
             onClick={onCreateScenario}
-            className="perspective-btn w-[40vw] sm:w-auto h-[10vw] sm:h-12 px-[4vw] sm:px-6 bg-[#f97316] hover:bg-[#ea580c] rounded-full overflow-hidden cursor-pointer transition-colors"
+            className="perspective-btn h-[10vw] sm:h-12 px-[5vw] sm:px-6 min-w-[30vw] sm:min-w-0 bg-[#f97316] hover:bg-[#ea580c] rounded-full overflow-hidden cursor-pointer transition-colors flex items-center justify-center"
+            aria-label="Create new scenario"
           >
-            <span className="text-white text-[2.5vw] sm:text-sm font-medium">
+            <span className="text-white text-[2.8vw] sm:text-sm font-medium whitespace-nowrap">
               <PerspectiveText>Create Scenario</PerspectiveText>
             </span>
           </MagneticButton>
@@ -79,6 +83,7 @@ export const HeroSection = ({ onViewScenarios, onCreateScenario }: HeroSectionPr
         animate={{ opacity: 1 }} 
         transition={{ delay: 1.2 }} 
         className="absolute bottom-[2vw] sm:bottom-6 lg:bottom-8"
+        aria-hidden="true"
       >
         <motion.div 
           animate={{ y: [0, 6, 0] }} 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { PerspectiveText } from '@/components/ui/PerspectiveText';
@@ -35,6 +35,8 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
   const isLegacyMode = 'isOpen' in props && props.isOpen !== undefined;
   
   const [internalActive, setInternalActive] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   
   const isActive = isLegacyMode ? props.isOpen : internalActive;
   
@@ -49,6 +51,36 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
     }
   };
 
+  // Auto-close on outside click - NEW FEATURE
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickedInsidePanel = panelRef.current?.contains(target);
+      const clickedButton = buttonRef.current?.contains(target);
+      
+      // Only close if clicked outside both the panel and the button
+      if (!clickedInsidePanel && !clickedButton) {
+        if (isLegacyMode) {
+          props.onClose?.();
+        } else {
+          setInternalActive(false);
+        }
+      }
+    };
+
+    // Small delay to prevent immediate close when opening
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isActive, isLegacyMode, props]);
+
   // Legacy mode - render as overlay
   if (isLegacyMode) {
     return (
@@ -61,18 +93,27 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
               onClick={props.onClose}
+              aria-hidden="true"
             />
             <motion.div
+              ref={panelRef}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(480px,90vw)] h-[min(600px,80vh)] bg-black border border-white/20 rounded-2xl z-50 overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="preview-title"
             >
               <div className="h-full flex flex-col p-4 sm:p-6">
                 <div className="flex justify-between items-center mb-4 sm:mb-6 shrink-0">
-                  <h2 className="text-lg sm:text-xl font-semibold text-white">Data Preview</h2>
-                  <button onClick={props.onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                  <h2 id="preview-title" className="text-lg sm:text-xl font-semibold text-white">Data Preview</h2>
+                  <button 
+                    onClick={props.onClose} 
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                    aria-label="Close preview panel"
+                  >
                     <span className="text-white text-xl">&times;</span>
                   </button>
                 </div>
@@ -88,33 +129,53 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
   // New mode - render as expandable button/panel
   return (
     <div className="fixed top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-50">
+      {/* Button - positioned outside panelRef so it doesn't interfere with outside click */}
+      <button
+        ref={buttonRef}
+        onClick={handleToggle}
+        className="perspective-btn absolute top-0 right-0 w-30 h-10 bg-white/10 hover:bg-white/20 rounded-full overflow-hidden cursor-pointer transition-colors border border-white/20 flex items-center justify-center z-[60]"
+        aria-label={isActive ? "Close preview panel" : "Open preview panel"}
+        aria-expanded={isActive}
+      >
+        <span className="text-white text-xs font-medium">
+          <PerspectiveText>{isActive ? "Close" : "Preview"}</PerspectiveText>
+        </span>
+      </button>
+
+      {/* Panel - has ref for outside click detection */}
       <motion.div
-        className="bg-black border border-white/20 rounded-2xl relative overflow-hidden"
+        ref={panelRef}
+        className="bg-black border border-white/20 rounded-2xl absolute overflow-hidden pointer-events-none"
         animate={isActive ? {
           width: "min(480px, 90vw)",
           height: "min(600px, 80vh)",
           top: "-25px",
           right: "-25px",
+          pointerEvents: "auto",
         } : {
           width: "120px",
           height: "40px",
           top: "0px",
           right: "0px",
+          pointerEvents: "none",
         }}
         initial={{
           width: "120px",
           height: "40px",
           top: "0px",
           right: "0px",
+          pointerEvents: "none",
         }}
         transition={isActive ? {
           duration: 0.75,
           ease: [0.76, 0, 0.24, 1]
         } : {
           duration: 0.75,
-          // delay: 0.35,
           ease: [0.76, 0, 0.24, 1]
         }}
+        role={isActive ? "dialog" : undefined}
+        aria-modal={isActive ? "true" : undefined}
+        aria-labelledby={isActive ? "preview-title" : undefined}
       >
         <AnimatePresence>
           {isActive && (
@@ -126,22 +187,13 @@ export const PreviewPanel = (props: PreviewPanelProps) => {
               className="h-full flex flex-col p-4 sm:p-6"
             >
               <div className="flex justify-between items-center mb-4 sm:mb-6 shrink-0">
-                <h2 className="text-lg sm:text-xl font-semibold text-white">Data Preview</h2>
+                <h2 id="preview-title" className="text-lg sm:text-xl font-semibold text-white">Data Preview</h2>
               </div>
               <PreviewContent data={props.data} />
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
-      
-      <button
-        onClick={handleToggle}
-        className="perspective-btn absolute top-0 right-0 w-30 h-10 bg-white/10 hover:bg-white/20 rounded-full overflow-hidden cursor-pointer transition-colors border border-white/20 flex items-center justify-center"
-      >
-        <span className="text-white text-xs font-medium">
-          <PerspectiveText>{isActive ? "Close" : "Preview"}</PerspectiveText>
-        </span>
-      </button>
     </div>
   );
 };

@@ -55,7 +55,8 @@ function App() {
         }
       `}</style>
       
-      <Toaster position="top-right" richColors theme="dark" />
+      {/* Changed from top-right to top-left */}
+      <Toaster position="top-center" richColors theme="dark" />
       
       {/* Welcome screen */}
       <AnimatePresence>
@@ -86,20 +87,20 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Main content */}
-      <main className="h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
-        <section className="h-screen snap-start snap-always">
+      {/* Main content - Changed to proximity for smoother snap behavior */}
+      <main className="h-screen overflow-y-auto scroll-smooth" style={{ scrollSnapType: 'y proximity' }}>
+        <section className="h-screen snap-start" style={{ scrollSnapStop: 'normal' }}>
           <HeroSection 
             onViewScenarios={handleViewScenarios}
             onCreateScenario={handleCreateClick}
           />
         </section>
         
-        <section ref={scenariosRef} className="h-screen snap-start snap-always overflow-hidden">
+        <section ref={scenariosRef} className="h-screen snap-start overflow-hidden" style={{ scrollSnapStop: 'normal' }}>
           <ScenariosSection onCreateClick={handleCreateClick} onEditClick={handleEditClick} />
         </section>
         
-        <section ref={createFormRef} className="h-screen snap-start snap-always overflow-hidden">
+        <section ref={createFormRef} className="h-screen snap-start overflow-hidden" style={{ scrollSnapStop: 'normal' }}>
           <CreateSection ref={createSectionRef} onSuccess={handleFormSuccess} />
         </section>
       </main>
